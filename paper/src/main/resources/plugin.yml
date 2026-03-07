@@ -1,0 +1,8 @@
+name: levelborder
+license: "GPL + MINECRAFT LINKING EXCEPTION"
+version: ${version}
+description: "A cross-platform Mod for the popular Minecraft project, where the border always has a radius equal to the player's current experience level."
+website: https://github.com/guenter00/levelborder
+main: "de.guenter.levelborder.LevelBorderPlugin"
+api-version: ${minecraft_version}
+authors: ["guenter00, jakobkmar"]

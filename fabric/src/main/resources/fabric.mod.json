@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "levelborder",
+  "version": "${version}",
+  "icon" : "icon.png",
+  "name": "Level = Border",
+  "description": "A cross-platform Mod for the popular Minecraft project, where the border always has a radius equal to the player's current experience level.",
+  "license": "GPL + MINECRAFT LINKING EXCEPTION",
+  "authors": [
+    "guenter00",
+    "jakobkmar"
+  ],
+  "mixins": [
+    "levelborder.mixins.json"
+  ],
+  "environment": "*",
+  "depends": {
+    "fabricloader": ">=0.18.0",
+    "minecraft": ">=${minecraft_version}",
+    "java": ">=17",
+    "fabric-api": "*"
+  }
+}

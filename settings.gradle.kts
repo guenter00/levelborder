@@ -1,9 +1,13 @@
-rootProject.name = "level-border"
+rootProject.name = "levelborder"
 
-include("${rootProject.name}-common")
-include("${rootProject.name}-vanilla")
+pluginManagement {
+    repositories {
+        maven { url = uri("https://maven.architectury.dev/") }
+        maven { url = uri("https://maven.fabricmc.net/") }
+        maven { url = uri("https://repo.papermc.io/repository/maven-public/") }
+        maven { url = uri("https://maven.minecraftforge.net/") }
+        gradlePluginPortal()
+    }
+}
 
-include("${rootProject.name}-fabric")
-//include("${rootProject.name}-forge")
-include("${rootProject.name}-paper")
-//include("${rootProject.name}-sponge")
+include("common", "fabric", "paper", "vanilla", "forge")

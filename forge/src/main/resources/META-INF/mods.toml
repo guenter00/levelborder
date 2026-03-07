@@ -1,0 +1,33 @@
+modLoader = "javafml"
+loaderVersion = "*"
+license = "GPL + MINECRAFT LINKING EXCEPTION"
+
+[[mods]]
+modId = "levelborder"
+
+version = "${version}"
+
+displayName = "Level = Border"
+
+logoFile = "icon.png"
+
+authors = "guenter00, jakobkmar"
+
+description = '''A cross-platform Mod for the popular Minecraft project, where the border always has a radius equal to the player's current experience level.'''
+
+[[mixins]]
+config = "levelborder.mixins.json"
+
+[[dependencies.levelborder]]
+modId = "forge"
+mandatory= true
+versionRange = "[${forge_version},)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.levelborder]]
+modId = "minecraft"
+mandatory= true
+versionRange = "[${minecraft_version},)"
+ordering = "NONE"
+side = "BOTH"

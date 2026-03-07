@@ -1,0 +1,10 @@
+{
+  "pack": {
+    "description": "levelborder",
+    "pack_format": 1,
+    "supported_formats": {
+      "min_inclusive": 1,
+      "max_inclusive": 999
+    }
+  }
+}
