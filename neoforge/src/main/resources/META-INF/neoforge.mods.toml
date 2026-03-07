@@ -19,15 +19,15 @@ description = '''A cross-platform Mod for the popular Minecraft project, where t
 config = "levelborder.mixins.json"
 
 [[dependencies.levelborder]]
-modId = "forge"
-mandatory= true
-versionRange = "[${forge_version},)"
+modId = "neoforge"
+type = "required"
+versionRange = "[${neoforge_version},)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.levelborder]]
 modId = "minecraft"
-mandatory= true
+type = "required"
 versionRange = "[${minecraft_version},)"
 ordering = "NONE"
 side = "BOTH"

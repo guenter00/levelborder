@@ -1,13 +1,14 @@
 plugins {
     id("java")
+    id("fabric-loom") version "1.15-SNAPSHOT" apply false
+    id("net.neoforged.moddev") version "2.0.140" apply false
     id("io.papermc.paperweight.userdev") version "2.0.0-SNAPSHOT" apply false
-    id("dev.architectury.loom") version "1.10-SNAPSHOT" apply false
 }
 
-val MINECRAFT_VERSION by extra { "1.20.1" }
-val FORGE_VERSION by extra { "1.20.1-47.4.13" }
+val MINECRAFT_VERSION by extra { "1.20.6" }
+val NEOFORGE_VERSION by extra { "20.6.139" }
 val FABRIC_LOADER_VERSION by extra { "0.18.4" }
-val FABRIC_API_VERSION by extra { "0.92.6+1.20.1" }
+val FABRIC_API_VERSION by extra { "0.100.8+1.20.6" }
 val MOD_VERSION by extra { "0.1-mc" + MINECRAFT_VERSION }
 
 allprojects {
@@ -26,13 +27,13 @@ tasks.jar {
 subprojects {
     apply(plugin = "maven-publish")
 
-    java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+    java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
     group = "de.guenter"
 
     tasks.withType<JavaCompile> {
         options.encoding = "UTF-8"
-        options.release.set(17)
+        options.release.set(21)
     }
 
     // Disables Gradle's custom module metadata from being published to maven. The

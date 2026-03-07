@@ -8,7 +8,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.border.WorldBorder;
 
@@ -24,7 +23,7 @@ public abstract class VanillaLevelBorderHandler extends LevelBorderHandler<Serve
 
     @Override
     public void setMode(BorderMode mode) {
-        var data = getServer().overworld().getDataStorage().computeIfAbsent(BorderModeSavedData::load, BorderModeSavedData::new, "levelBorder");
+        var data = getServer().overworld().getDataStorage().computeIfAbsent(BorderModeSavedData.TYPE, "levelBorder");
         data.borderMode = mode;
         data.setDirty();
         super.setMode(mode);
@@ -32,7 +31,7 @@ public abstract class VanillaLevelBorderHandler extends LevelBorderHandler<Serve
 
     @Override
     protected BorderMode getMode() {
-        return getServer().overworld().getDataStorage().computeIfAbsent(BorderModeSavedData::load, BorderModeSavedData::new, "levelBorder").borderMode;
+        return getServer().overworld().getDataStorage().computeIfAbsent(BorderModeSavedData.TYPE, "levelBorder").borderMode;
     }
 
     @Override

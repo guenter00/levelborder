@@ -6,7 +6,7 @@ import net.minecraft.world.level.border.WorldBorder;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_20_R1.CraftServer;
+import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -31,7 +31,7 @@ public class LevelBorderPlugin extends JavaPlugin implements Listener {
     }
 
     private ServerPlayer toVanillaPlayer(Player player) {
-        return ((org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer) player).getHandle();
+        return ((org.bukkit.craftbukkit.entity.CraftPlayer) player).getHandle();
     }
 
     @EventHandler
@@ -56,7 +56,6 @@ public class LevelBorderPlugin extends JavaPlugin implements Listener {
 
         boolean outsideBorder = x < border.getMinX() || x > border.getMaxX() ||
                                 z < border.getMinZ() || z > border.getMaxZ();
-
         if (outsideBorder) {
             boolean hadCustomRespawn = event.isBedSpawn() || event.isAnchorSpawn();
             final var pos = levelBorderHandler.getRespawnPos();

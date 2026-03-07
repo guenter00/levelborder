@@ -1,64 +1,52 @@
 plugins {
-    id("dev.architectury.loom")
+    id("net.neoforged.moddev")
 }
 
+val notNeoTask: (Task) -> Boolean = { !it.name.startsWith("neo") && !it.name.startsWith("compileService") }
+val NEOFORGE_VERSION: String by rootProject.extra
 val MINECRAFT_VERSION: String by rootProject.extra
-val FORGE_VERSION: String by rootProject.extra
 val MOD_VERSION: String by rootProject.extra
+
+base {
+    archivesName = "levelborder-neoforge"
+}
 
 repositories {
     mavenCentral()
 }
 
-base {
-    archivesName.set("levelborder-forge")
-}
-
 dependencies {
-    forge("net.minecraftforge:forge:$FORGE_VERSION")
-
-    minecraft("com.mojang:minecraft:$MINECRAFT_VERSION")
-    mappings(loom.layered { officialMojangMappings() })
-
     compileOnly(project(":common"))
     compileOnly(project(":vanilla"))
 }
 
-loom {
-    mixin{
-        defaultRefmapName.set("levelborder.refmap.json")
-    }
-
+neoForge {
+    version = NEOFORGE_VERSION
     runs {
-        named("client") {
+        create("client") {
             client()
-            configName = "forge - Client"
-            programArgs("--username=Dev")
-            ideConfigGenerated(true)
-            runDir("run")
         }
-        named("server") {
+    }
+    runs {
+        create("server") {
             server()
-            configName = "forge - Server"
-            ideConfigGenerated(true)
-            runDir("run")
         }
     }
 
-    forge {
-        convertAccessWideners = true
-        mixinConfigs("levelborder.mixins.json")
+    mods {
+        create("levelborder_minecraft") {
+            sourceSet(sourceSets.main.get())
+        }
     }
 }
-
-tasks.withType<ProcessResources>().configureEach {
+tasks.withType<ProcessResources>().matching(notNeoTask).configureEach {
     from(project(":common").sourceSets.main.get().resources)
     from(project(":vanilla").sourceSets.main.get().resources)
-    filesMatching("META-INF/mods.toml") {
+    filesMatching("META-INF/neoforge.mods.toml") {
         expand(
             "version" to MOD_VERSION,
-            "minecraft_version" to MINECRAFT_VERSION,
-            "forge_version" to FORGE_VERSION
+            "neoforge_version" to NEOFORGE_VERSION.substringBefore("-").split(".").take(2).joinToString("."),
+            "minecraft_version" to MINECRAFT_VERSION
         )
     }
 }
@@ -69,15 +57,12 @@ tasks.withType<Jar>().configureEach {
     from(project(":vanilla").sourceSets.main.get().output) {
         exclude("**/LevelBorderMod.*")
     }
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-
-tasks.remapJar {
     archiveVersion.set(MOD_VERSION)
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     destinationDirectory.set(rootProject.layout.buildDirectory.dir("libs"))
 }
 
-tasks.withType<JavaCompile>().configureEach {
+tasks.withType<JavaCompile>().matching(notNeoTask).configureEach {
     source(project(":common").sourceSets.main.get().allSource)
     source(project(":vanilla").sourceSets.main.get().allSource.matching {
         exclude("**/LevelBorderMod.*")

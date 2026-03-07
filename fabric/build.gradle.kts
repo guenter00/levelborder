@@ -1,5 +1,5 @@
 plugins {
-    id("dev.architectury.loom")
+    id("fabric-loom")
 }
 
 val MINECRAFT_VERSION: String by rootProject.extra
@@ -20,17 +20,13 @@ dependencies {
     modImplementation("net.fabricmc.fabric-api:fabric-api:${FABRIC_API_VERSION}")
 
     minecraft("com.mojang:minecraft:$MINECRAFT_VERSION")
-    mappings(loom.layered { officialMojangMappings() })
+    mappings(loom.layered{officialMojangMappings()})
 
     compileOnly(project(":common"))
     compileOnly(project(":vanilla"))
 }
 
 loom {
-    mixin{
-        defaultRefmapName.set("levelborder.refmap.json")
-    }
-
     runs {
         named("client") {
             client()

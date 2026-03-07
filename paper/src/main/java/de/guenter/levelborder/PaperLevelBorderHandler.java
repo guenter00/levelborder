@@ -24,10 +24,9 @@ public class PaperLevelBorderHandler extends VanillaLevelBorderHandler {
 
     @Override
     protected MinecraftServer getServer() {
-        return ((org.bukkit.craftbukkit.v1_20_R1.CraftServer) Bukkit.getServer()).getServer();
+        return ((org.bukkit.craftbukkit.CraftServer) Bukkit.getServer()).getServer();
     }
 
-    @Override
     protected Pos2d getPaperBorderCenter(ServerPlayer player) {
         Pos3i spawn = sharedOverworldSpawn();
         var dim = player.level().dimension();
