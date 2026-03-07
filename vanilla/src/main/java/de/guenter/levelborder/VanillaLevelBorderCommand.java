@@ -17,7 +17,7 @@ public class VanillaLevelBorderCommand {
                 .requires(source -> source.getEntity() instanceof ServerPlayer)
                 .executes(context -> {
                     context.getSource().sendSuccess(
-                            Component.literal("You executed the base command of level-border. If you want to change some settings, continue with the subcommands."),
+                            () -> Component.literal("You executed the base command of level-border. If you want to change some settings, continue with the subcommands."),
                             true
                     );
                     return 1;
@@ -34,7 +34,7 @@ public class VanillaLevelBorderCommand {
                                     BorderMode mode = BorderMode.valueOf(context.getArgument("mode", String.class));
                                     levelBorderHandlerSupplier.get().setMode(mode);
                                     context.getSource().sendSuccess(
-                                            Component.literal("Border mode set to: " + mode.name()),
+                                            () -> Component.literal("Border mode set to: " + mode.name()),
                                             true
                                     );
                                     return 1;

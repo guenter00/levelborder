@@ -11,26 +11,26 @@ public class PaperLevelBorderHandler extends VanillaLevelBorderHandler {
     @Override
     protected WorldBorder createWorldBorder(ServerPlayer player) {
         WorldBorder border = new WorldBorder();
-        border.world = (ServerLevel) player.getLevel();
+        border.world = (ServerLevel) player.level();
         return border;
     }
 
     @Override
     protected WorldBorder toPacketBorder(ServerPlayer player, WorldBorder serverBorder) {
         WorldBorder packetBorder = super.toPacketBorder(player, serverBorder);
-        packetBorder.world = (ServerLevel) player.getLevel();
+        packetBorder.world = (ServerLevel) player.level();
         return packetBorder;
     }
 
     @Override
     protected MinecraftServer getServer() {
-        return ((org.bukkit.craftbukkit.v1_19_R1.CraftServer) Bukkit.getServer()).getServer();
+        return ((org.bukkit.craftbukkit.v1_20_R1.CraftServer) Bukkit.getServer()).getServer();
     }
 
     @Override
     protected Pos2d getPaperBorderCenter(ServerPlayer player) {
         Pos3i spawn = sharedOverworldSpawn();
-        var dim = player.getLevel().dimension();
+        var dim = player.level().dimension();
 
         if (dim == Level.NETHER) {
             Pos3i netherSpawn = spawn.div(8);

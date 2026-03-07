@@ -4,10 +4,10 @@ plugins {
     id("dev.architectury.loom") version "1.10-SNAPSHOT" apply false
 }
 
-val MINECRAFT_VERSION by extra { "1.19.2" }
-val FORGE_VERSION by extra { "1.19.2-43.5.2" }
+val MINECRAFT_VERSION by extra { "1.20.1" }
+val FORGE_VERSION by extra { "1.20.1-47.4.13" }
 val FABRIC_LOADER_VERSION by extra { "0.18.4" }
-val FABRIC_API_VERSION by extra { "0.77.0+1.19.2" }
+val FABRIC_API_VERSION by extra { "0.92.6+1.20.1" }
 val MOD_VERSION by extra { "0.1-mc" + MINECRAFT_VERSION }
 
 allprojects {

@@ -164,7 +164,7 @@ public abstract class VanillaLevelBorderHandler extends LevelBorderHandler<Serve
 
     @Override
     protected double getDistance(ServerPlayer player, WorldBorder border) {
-        if (player.getLevel().dimension() == Level.NETHER) {
+        if (player.level().dimension() == Level.NETHER) {
 
             double playerX = player.getX() * 8.0d;
             double playerZ = player.getZ() * 8.0d;
@@ -212,7 +212,7 @@ public abstract class VanillaLevelBorderHandler extends LevelBorderHandler<Serve
     
     private Pos2d getBorderCenter(ServerPlayer player) {
         Pos3i spawn = sharedOverworldSpawn();
-        var dim = player.getLevel().dimension();
+        var dim = player.level().dimension();
 
         if (dim == Level.NETHER) {
             
@@ -317,7 +317,7 @@ public abstract class VanillaLevelBorderHandler extends LevelBorderHandler<Serve
     @Override protected int getTotalExperience(ServerPlayer player) { return player.totalExperience; }
     @Override protected int getExperienceLevel(ServerPlayer player) { return player.experienceLevel; }
     @Override protected UUID getUUID(ServerPlayer player) { return player.getUUID(); }
-    @Override protected void hurt(ServerPlayer player, float damage) { player.hurt(DamageSource.IN_WALL, damage); }
+    @Override protected void hurt(ServerPlayer player, float damage) { player.hurt(player.damageSources().inWall(), damage); }
 
     @Override
     protected void copyExperience(ServerPlayer player, ServerPlayer other) {

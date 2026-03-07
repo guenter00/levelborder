@@ -29,7 +29,7 @@ public class PlayerListMixin {
             if (world.dimension() == Level.OVERWORLD) {
                 if (!LevelBorderMod.levelBorderHandler.isWithinBorder(player)) {
                     final var spawn = LevelBorderMod.levelBorderHandler.getRespawnPos();
-                    final var overworld = player.getLevel().getServer().overworld();
+                    final var overworld = player.level().getServer().overworld();
                     if (overworld != null) {
                         player.teleportTo(overworld, spawn.x() + 0.5d, (double) spawn.y(), spawn.z() + 0.5d,
                                 player.getYRot(), player.getXRot());
@@ -49,9 +49,9 @@ public class PlayerListMixin {
         try {
             if (LevelBorderMod.levelBorderHandler == null) return;
 
-            newPlayer.getLevel().getServer().execute(() -> {
+            newPlayer.level().getServer().execute(() -> {
                 try {
-                    LevelBorderMod.levelBorderHandler.initBorder(newPlayer, newPlayer.getLevel().dimension() == Level.NETHER);
+                    LevelBorderMod.levelBorderHandler.initBorder(newPlayer, newPlayer.level().dimension() == Level.NETHER);
 
                     final var respawnPos = newPlayer.getRespawnPosition();
                     final boolean hadCustomRespawn = respawnPos != null;
@@ -75,7 +75,7 @@ public class PlayerListMixin {
 
                     if (!LevelBorderMod.levelBorderHandler.isWithinBorder(newPlayer)) {
                         final var pos = LevelBorderMod.levelBorderHandler.getRespawnPos();
-                        final var overworld = newPlayer.getLevel().getServer().overworld();
+                        final var overworld = newPlayer.level().getServer().overworld();
                         if (overworld != null) {
                             newPlayer.teleportTo(overworld, pos.x() + 0.5d, (double) pos.y(), pos.z() + 0.5d,
                                     newPlayer.getYRot(), newPlayer.getXRot());
