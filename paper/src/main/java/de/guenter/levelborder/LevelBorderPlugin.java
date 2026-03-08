@@ -34,6 +34,10 @@ public class LevelBorderPlugin extends JavaPlugin implements Listener {
         return ((org.bukkit.craftbukkit.entity.CraftPlayer) player).getHandle();
     }
 
+    private boolean isInNether(Player player) {
+        return player.getWorld().getEnvironment() == World.Environment.NETHER;
+    }
+
     @EventHandler
     public void onPlayerTick(ServerTickStartEvent event) {
         for (ServerPlayer player : ((CraftServer) Bukkit.getServer()).getServer().getPlayerList().getPlayers()) {
@@ -80,7 +84,7 @@ public class LevelBorderPlugin extends JavaPlugin implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Bukkit.getScheduler().runTaskLater(this, () -> {
             final var serverPlayer = toVanillaPlayer(event.getPlayer());
-            levelBorderHandler.initBorder(serverPlayer);
+            levelBorderHandler.initBorder(serverPlayer, isInNether(event.getPlayer()));
 
             if (event.getPlayer().getWorld().getEnvironment() == World.Environment.NORMAL
                     && !levelBorderHandler.isWithinBorder(serverPlayer)) {
@@ -102,8 +106,8 @@ public class LevelBorderPlugin extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onChangeWorld(PlayerChangedWorldEvent event) {
-        levelBorderHandler.initBorder(toVanillaPlayer(event.getPlayer()));
-    }
+        levelBorderHandler.initBorder(toVanillaPlayer(event.getPlayer()), isInNether(event.getPlayer()));
+}
 
     @EventHandler
     public void onChangeLevel(PlayerLevelChangeEvent event) {

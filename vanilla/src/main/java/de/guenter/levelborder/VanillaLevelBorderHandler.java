@@ -41,19 +41,14 @@ public abstract class VanillaLevelBorderHandler extends LevelBorderHandler<Serve
 
     @Override
     protected void initBorder(ServerPlayer player, WorldBorder border, double size) {
-        Pos2d center = getPaperBorderCenter(player);
+        Pos2d center = getBorderCenter(player);
         setCenter(border, center.x(), center.z());
         border.setSize(size);
         UUID id = player.getUUID();
         previousBorderSizes.put(id, size);
         animationEndTimes.remove(id);
         pendingAnimations.remove(id);
-        player.connection.send(new ClientboundInitializeBorderPacket(toPacketBorder(player, border)));
-    }
-
-    
-    protected Pos2d getPaperBorderCenter(ServerPlayer player) {
-        return getBorderCenter(player);
+        player.connection.send(new ClientboundInitializeBorderPacket(border));
     }
 
     @Override
@@ -76,37 +71,22 @@ public abstract class VanillaLevelBorderHandler extends LevelBorderHandler<Serve
         previousBorderSizes.put(id, targetSize);
         startSizes.put(id, fromSize);
         animationEndTimes.put(id, now + ANIMATION_DURATION_MS);
-        sendLerpPacket(player, border, fromSize, targetSize);
+        sendLerpPacket(player, fromSize, targetSize);
     }
 
-    private void sendLerpPacket(ServerPlayer player, WorldBorder border, double fromSize, double toSize) {
+    private void sendLerpPacket(ServerPlayer player, double fromSize, double toSize) {
         try {
             
             WorldBorder dummy = new WorldBorder();
-            WorldBorder packetBorder = toPacketBorder(player, border);
-            dummy.setCenter(packetBorder.getCenterX(), packetBorder.getCenterZ());
             dummy.setSize(fromSize);
             dummy.lerpSizeBetween(fromSize, toSize, ANIMATION_DURATION_MS);
             player.connection.send(new ClientboundSetBorderLerpSizePacket(dummy));
         } catch (Exception ex) {
             
             WorldBorder temp = new WorldBorder();
-            WorldBorder packetBorder = toPacketBorder(player, border);
-            temp.setCenter(packetBorder.getCenterX(), packetBorder.getCenterZ());
             temp.setSize(toSize);
             player.connection.send(new ClientboundSetBorderSizePacket(temp));
         }
-    }
-
-    protected WorldBorder toPacketBorder(ServerPlayer player, WorldBorder serverBorder) {
-        WorldBorder packetBorder = new WorldBorder();
-        packetBorder.setCenter(serverBorder.getCenterX(), serverBorder.getCenterZ());
-        packetBorder.setSize(serverBorder.getSize());
-        packetBorder.setWarningBlocks(serverBorder.getWarningBlocks());
-        packetBorder.setWarningTime(serverBorder.getWarningTime());
-        packetBorder.setDamageSafeZone(serverBorder.getDamageSafeZone());
-        packetBorder.setDamagePerBlock(serverBorder.getDamagePerBlock());
-        return packetBorder;
     }
 
     @Override
@@ -163,49 +143,17 @@ public abstract class VanillaLevelBorderHandler extends LevelBorderHandler<Serve
 
     @Override
     protected double getDistance(ServerPlayer player, WorldBorder border) {
-        if (player.level().dimension() == Level.NETHER) {
-
-            double playerX = player.getX() * 8.0d;
-            double playerZ = player.getZ() * 8.0d;
-
-            double halfSize = (border.getSize() * 8.0d) / 2.0d;
-
-            double centerX = border.getCenterX();
-            double centerZ = border.getCenterZ();
-
-            double minX = centerX - halfSize;
-            double maxX = centerX + halfSize;
-            double minZ = centerZ - halfSize;
-            double maxZ = centerZ + halfSize;
-
-            boolean insideX = playerX >= minX && playerX <= maxX;
-            boolean insideZ = playerZ >= minZ && playerZ <= maxZ;
-
-            if (insideX && insideZ) {
-                
-                double distToEdge = Math.min(
-                    Math.min(playerX - minX, maxX - playerX),
-                    Math.min(playerZ - minZ, maxZ - playerZ)
-                );
-                return distToEdge / 8.0d;
-            }
-
-            double dx = 0;
-            double dz = 0;
-            if (playerX < minX) dx = minX - playerX;
-            else if (playerX > maxX) dx = playerX - maxX;
-            if (playerZ < minZ) dz = minZ - playerZ;
-            else if (playerZ > maxZ) dz = playerZ - maxZ;
-
-            return -Math.max(dx, dz) / 8.0d;
+        double dist = border.getDistanceToBorder(player);
+        if (player.level().dimension() == Level.NETHER && dist < 0.0d && dist > -0.3d) {
+            return 0.0d;
         }
-        return border.getDistanceToBorder(player);
+        return dist;
     }
     
     @Override
     protected Pos3i sharedOverworldSpawn() {
         ServerLevel overworld = getServer().overworld();
-        BlockPos pos = overworld.getSharedSpawnPos();
+        BlockPos pos = overworld.getLevelData().getRespawnData().pos();
         return new Pos3i(pos.getX(), pos.getY(), pos.getZ());
     }
     
@@ -214,8 +162,8 @@ public abstract class VanillaLevelBorderHandler extends LevelBorderHandler<Serve
         var dim = player.level().dimension();
 
         if (dim == Level.NETHER) {
-            
-            return new Pos2d(spawn.x() + 4.0d, spawn.z() + 4.0d);
+
+            return new Pos2d(spawn.x() / 8.0d + 0.5d, spawn.z() / 8.0d + 0.5d);
         } else if (dim == Level.END) {
             
             return new Pos2d(0.5d, 0.5d);
@@ -228,37 +176,35 @@ public abstract class VanillaLevelBorderHandler extends LevelBorderHandler<Serve
     public Pos3i getRespawnPos() {
         ServerLevel overworld = getServer().overworld();
         Pos3i spawn = sharedOverworldSpawn();
-        
+
         double centerX = spawn.x() + 0.5d;
         double centerZ = spawn.z() + 0.5d;
-        
+
         double borderSize = getCurrentBorderSize();
         double halfSize = borderSize / 2.0d;
-        
+
         double minX = centerX - halfSize;
         double maxX = centerX + halfSize;
         double minZ = centerZ - halfSize;
         double maxZ = centerZ + halfSize;
-        
+
         int blockMinX = (int) Math.floor(minX);
         int blockMaxX = (int) Math.floor(maxX);
         int blockMinZ = (int) Math.floor(minZ);
         int blockMaxZ = (int) Math.floor(maxZ);
-        
+
         List<BlockPos> validBlocks = new ArrayList<>();
 
         for (int blockX = blockMinX; blockX <= blockMaxX; blockX++) {
             for (int blockZ = blockMinZ; blockZ <= blockMaxZ; blockZ++) {
-                
+
                 double playerX = blockX + 0.5d;
                 double playerZ = blockZ + 0.5d;
 
-                
                 if (playerX < minX || playerX > maxX || playerZ < minZ || playerZ > maxZ) {
                     continue;
                 }
 
-                
                 if (isSafeSpawnBlock(overworld, blockX, blockZ)) {
                     int y = overworld.getHeight(
                         net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
@@ -269,18 +215,18 @@ public abstract class VanillaLevelBorderHandler extends LevelBorderHandler<Serve
         }
 
         if (!validBlocks.isEmpty()) {
-            
+
             Random random = new Random();
             BlockPos selected = validBlocks.get(random.nextInt(validBlocks.size()));
             return new Pos3i(selected.getX(), selected.getY(), selected.getZ());
         }
-        
+
         int fallbackY = overworld.getHeight(
             net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
             spawn.x(), spawn.z());
         return new Pos3i(spawn.x(), fallbackY, spawn.z());
     }
-    
+
     private boolean isSafeSpawnBlock(ServerLevel level, int x, int z) {
         int surfaceY = level.getHeight(
             net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
@@ -300,7 +246,7 @@ public abstract class VanillaLevelBorderHandler extends LevelBorderHandler<Serve
 
         return groundSolid && groundNotFluid && feetPassable && headPassable;
     }
-    
+
     private double getCurrentBorderSize() {
         BorderMode mode = getMode();
         if (mode == BorderMode.SUM) {
