@@ -63,7 +63,7 @@ public abstract class LevelBorderHandler<Player, WorldBorder, Server> {
         borders.put(getUUID(player), newBorder);
     }
 
-    final public WorldBorder getBorderForPlayer(Player player) {
+    final protected WorldBorder getBorderForPlayer(Player player) {
         return borders.get(getUUID(player));
     }
 

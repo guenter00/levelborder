@@ -1,12 +1,11 @@
 package de.guenter.levelborder.mixin;
 
 import de.guenter.levelborder.LevelBorderMod;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.AABB;
+import net.minecraft.world.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -41,8 +40,8 @@ public class PlayerListMixin {
         }
     }
 
-    @Inject(method = "respawn(Lnet/minecraft/server/level/ServerPlayer;Z)Lnet/minecraft/server/level/ServerPlayer;", at = @At("RETURN"), require = 0)
-    private void onRespawn(ServerPlayer player, boolean alive, CallbackInfoReturnable<ServerPlayer> cir) {
+    @Inject(method = "respawn(Lnet/minecraft/server/level/ServerPlayer;ZLnet/minecraft/world/entity/Entity$RemovalReason;)Lnet/minecraft/server/level/ServerPlayer;", at = @At("RETURN"), require = 0)
+    private void onRespawnWithReason(ServerPlayer player, boolean alive, Entity.RemovalReason reason, CallbackInfoReturnable<ServerPlayer> cir) {
         final ServerPlayer newPlayer = cir.getReturnValue();
         if (newPlayer == null) return;
 
@@ -51,34 +50,21 @@ public class PlayerListMixin {
 
             newPlayer.level().getServer().execute(() -> {
                 try {
-                    LevelBorderMod.levelBorderHandler.initBorder(newPlayer, newPlayer.level().dimension() == Level.NETHER);
-
-                    final var respawnPos = newPlayer.getRespawnPosition();
-                    final boolean hadCustomRespawn = respawnPos != null;
-
-                    boolean respawnPointOutsideBorder = false;
-                    if (hadCustomRespawn) {
-                        final var border = LevelBorderMod.levelBorderHandler.getBorderForPlayer(newPlayer);
-                        if (border != null) {
-                            final var respawnBox = new AABB(
-                                    respawnPos.getX(), respawnPos.getY(), respawnPos.getZ(),
-                                    respawnPos.getX() + 1.0d, respawnPos.getY() + 2.0d, respawnPos.getZ() + 1.0d
-                            );
-                            respawnPointOutsideBorder = !border.isWithinBounds(respawnBox);
-                        }
-                    }
-
-                    if (respawnPointOutsideBorder) {
-                        newPlayer.sendSystemMessage(Component.literal(
-                                "Spawn point outside border! Relocated to safe zone."));
-                    }
+                    final boolean inNether = newPlayer.level().dimension() == Level.NETHER;
+                    LevelBorderMod.levelBorderHandler.initBorder(newPlayer, inNether);
 
                     if (!LevelBorderMod.levelBorderHandler.isWithinBorder(newPlayer)) {
+                        boolean hadCustomRespawn = newPlayer.getRespawnPosition() != null;
                         final var pos = LevelBorderMod.levelBorderHandler.getRespawnPos();
                         final var overworld = newPlayer.level().getServer().overworld();
                         if (overworld != null) {
                             newPlayer.teleportTo(overworld, pos.x() + 0.5d, (double) pos.y(), pos.z() + 0.5d,
                                     newPlayer.getYRot(), newPlayer.getXRot());
+
+                            if (hadCustomRespawn) {
+                                newPlayer.sendSystemMessage(net.minecraft.network.chat.Component.literal(
+                                        "Spawn point outside border! Relocated to safe zone."));
+                            }
                         }
                     }
                 } catch (Throwable inner) {
