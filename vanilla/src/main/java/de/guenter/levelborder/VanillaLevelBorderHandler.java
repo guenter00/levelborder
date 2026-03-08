@@ -11,6 +11,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.border.WorldBorder;
 
+import java.lang.reflect.Field;
 import java.util.*;
 
 public abstract class VanillaLevelBorderHandler extends LevelBorderHandler<ServerPlayer, WorldBorder, MinecraftServer> {
@@ -71,16 +72,26 @@ public abstract class VanillaLevelBorderHandler extends LevelBorderHandler<Serve
         previousBorderSizes.put(id, targetSize);
         startSizes.put(id, fromSize);
         animationEndTimes.put(id, now + ANIMATION_DURATION_MS);
-        sendLerpPacket(player, fromSize, targetSize);
+        sendLerpPacket(player, fromSize, targetSize, 40L);
     }
 
-    private void sendLerpPacket(ServerPlayer player, double fromSize, double toSize) {
+    private void sendLerpPacket(ServerPlayer player, double fromSize, double toSize, long durationTicks) {
         try {
             
             WorldBorder dummy = new WorldBorder();
             dummy.setSize(fromSize);
-            dummy.lerpSizeBetween(fromSize, toSize, ANIMATION_DURATION_MS);
-            player.connection.send(new ClientboundSetBorderLerpSizePacket(dummy));
+            ClientboundSetBorderLerpSizePacket packet = new ClientboundSetBorderLerpSizePacket(dummy);
+
+            int doubleCount = 0;
+            for (Field f : ClientboundSetBorderLerpSizePacket.class.getDeclaredFields()) {
+                f.setAccessible(true);
+                if (f.getType() == double.class) {
+                    f.setDouble(packet, doubleCount++ == 0 ? fromSize : toSize);
+                } else if (f.getType() == long.class) {
+                    f.setLong(packet, durationTicks);
+                }
+            }
+            player.connection.send(packet);
         } catch (Exception ex) {
             
             WorldBorder temp = new WorldBorder();

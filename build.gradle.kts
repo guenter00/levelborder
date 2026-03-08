@@ -5,10 +5,10 @@ plugins {
     id("io.papermc.paperweight.userdev") version "2.0.0-beta.19" apply false
 }
 
-val MINECRAFT_VERSION by extra { "1.21.10" }
-val NEOFORGE_VERSION by extra { "21.10.64" }
+val MINECRAFT_VERSION by extra { "1.21.11" }
+val NEOFORGE_VERSION by extra { "21.11.38-beta" }
 val FABRIC_LOADER_VERSION by extra { "0.18.4" }
-val FABRIC_API_VERSION by extra { "0.138.4+1.21.10" }
+val FABRIC_API_VERSION by extra { "0.141.3+1.21.11" }
 val MOD_VERSION by extra { "0.1-mc" + MINECRAFT_VERSION }
 
 allprojects {
