@@ -2,7 +2,7 @@ plugins {
     id("java")
     id("fabric-loom") version "1.15-SNAPSHOT" apply false
     id("net.neoforged.moddev") version "2.0.140" apply false
-    id("io.papermc.paperweight.userdev") version "2.0.0-SNAPSHOT" apply false
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.19" apply false
 }
 
 val MINECRAFT_VERSION by extra { "1.21.1" }
