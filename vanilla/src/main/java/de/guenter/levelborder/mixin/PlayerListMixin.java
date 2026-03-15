@@ -31,7 +31,7 @@ public class PlayerListMixin {
                     final var overworld = player.level().getServer().overworld();
                     if (overworld != null) {
                         player.teleportTo(overworld, spawn.x() + 0.5d, (double) spawn.y(), spawn.z() + 0.5d,
-                                player.getYRot(), player.getXRot(), false);
+                                java.util.Collections.emptySet(), player.getYRot(), player.getXRot(), false);
                     }
                 }
             }
@@ -59,7 +59,7 @@ public class PlayerListMixin {
                         final var overworld = newPlayer.level().getServer().overworld();
                         if (overworld != null) {
                             newPlayer.teleportTo(overworld, pos.x() + 0.5d, (double) pos.y(), pos.z() + 0.5d,
-                                    newPlayer.getYRot(), newPlayer.getXRot(), false);
+                                    java.util.Collections.emptySet(), newPlayer.getYRot(), newPlayer.getXRot(), false);
 
                             if (hadCustomRespawn) {
                                 newPlayer.sendSystemMessage(net.minecraft.network.chat.Component.literal(
