@@ -19,7 +19,7 @@ The center of the border is the world spawn. To change it, use ```/setworldspawn
 
 ### Download
 
-Level = Border can be downloaded [here on **Modrinth**](https://modrinth.com/mod/lvlb/versions).
+Level = Border can be downloaded [here on **Modrinth**](https://modrinth.com/mod/lvlb/versions) or [here on **CurseForge**](https://www.curseforge.com/minecraft/mc-mods/lvlb/files/all).
 
 ### License
 
