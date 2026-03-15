@@ -1,6 +1,6 @@
 plugins {
     id("java")
-    id("io.papermc.paperweight.userdev") version "2.0.0-SNAPSHOT" apply false
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.19" apply false
     id("dev.architectury.loom") version "1.10-SNAPSHOT" apply false
 }
 
