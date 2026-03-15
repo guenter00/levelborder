@@ -1,0 +1,87 @@
+name: Release script
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  publish:
+    name: Publish ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Fabric
+            files: build/libs/*fabric*.jar
+            loaders: fabric quilt
+            cf-id: 1487287
+          - name: Neoforge
+            files: build/libs/*neoforge*.jar
+            loaders: neoforge
+            cf-id: 1487287
+          - name: Paper
+            files: build/libs/*paper*.jar
+            loaders: paper
+            cf-id: ''
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+        with:
+          cache-read-only: false
+
+      - name: Run build with Gradle Wrapper
+        run: ./gradlew build -Dbuild.release=true
+
+      - name: Read Minecraft Version from build.gradle.kts
+        run: |
+          VERSION=$(grep "val MINECRAFT_VERSION" build.gradle.kts | cut -d '"' -f 2)
+          echo "MINECRAFT_VERSION=$VERSION" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Upload artifacts
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          name: ${{ github.event.release.name }} (${{ matrix.name }})
+          version: ${{ github.event.release.tag_name }}-${{ matrix.name }}
+          version-type: release
+          version-resolver: latest
+
+          game-versions: ${{ env.MINECRAFT_VERSION }}
+          java: 21
+
+          files: ${{ matrix.files }}
+          loaders: ${{ matrix.loaders }}
+
+          modrinth-id: 6o6CezST
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          modrinth-featured: true
+
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload to CurseForge
+        if: matrix.cf-id != ''
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          name: ${{ github.event.release.name }} (${{ matrix.name }})
+          version: ${{ github.event.release.tag_name }}-${{ matrix.name }}
+          version-type: release
+          version-resolver: latest
+
+          game-versions: ${{ env.MINECRAFT_VERSION }}
+          java: 21
+
+          files: ${{ matrix.files }}
+          loaders: ${{ matrix.loaders }}
+
+          curseforge-id: ${{ matrix.cf-id }}
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
