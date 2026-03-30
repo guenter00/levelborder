@@ -21,13 +21,13 @@ config = "levelborder.mixins.json"
 [[dependencies.levelborder]]
 modId = "neoforge"
 type = "required"
-versionRange = "[${neoforge_version},)"
+versionRange = "[${minecraft_version}-alpha,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.levelborder]]
 modId = "minecraft"
 type = "required"
-versionRange = "[${minecraft_version}]"
+versionRange = "[${minecraft_version}-alpha,)"
 ordering = "NONE"
 side = "BOTH"

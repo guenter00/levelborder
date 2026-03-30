@@ -1,5 +1,6 @@
 package de.guenter.levelborder;
 
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 import net.minecraft.util.datafix.DataFixTypes;
@@ -25,7 +26,7 @@ public class BorderModeSavedData extends SavedData {
     ).apply(instance, BorderModeSavedData::new));
 
     public static final SavedDataType<BorderModeSavedData> TYPE = new SavedDataType<BorderModeSavedData>(
-            "levelBorder",
+            Identifier.withDefaultNamespace( "levelborder"),
             BorderModeSavedData::new,
             CODEC,
             DataFixTypes.LEVEL

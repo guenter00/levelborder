@@ -45,8 +45,7 @@ tasks.withType<ProcessResources>().matching(notNeoTask).configureEach {
     filesMatching("META-INF/neoforge.mods.toml") {
         expand(
             "version" to MOD_VERSION,
-            "neoforge_version" to NEOFORGE_VERSION.substringBefore("-").split(".").take(2).joinToString("."),
-            "minecraft_version" to MINECRAFT_VERSION
+            "minecraft_version" to MINECRAFT_VERSION.substringBefore("-").split(".").take(2).joinToString(".")
         )
     }
 }

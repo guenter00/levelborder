@@ -1,5 +1,5 @@
 plugins {
-    id("fabric-loom")
+    id("net.fabricmc.fabric-loom")
 }
 
 val MINECRAFT_VERSION: String by rootProject.extra
@@ -16,11 +16,10 @@ base {
 }
 
 dependencies {
-    modImplementation("net.fabricmc:fabric-loader:${FABRIC_LOADER_VERSION}")
-    modImplementation("net.fabricmc.fabric-api:fabric-api:${FABRIC_API_VERSION}")
+    implementation("net.fabricmc:fabric-loader:${FABRIC_LOADER_VERSION}")
+    implementation("net.fabricmc.fabric-api:fabric-api:${FABRIC_API_VERSION}")
 
     minecraft("com.mojang:minecraft:$MINECRAFT_VERSION")
-    mappings(loom.layered{officialMojangMappings()})
 
     compileOnly(project(":common"))
     compileOnly(project(":vanilla"))
@@ -49,7 +48,7 @@ tasks.withType<ProcessResources>().configureEach {
     filesMatching("fabric.mod.json") {
         expand(
             "version" to MOD_VERSION,
-            "minecraft_version" to MINECRAFT_VERSION
+            "minecraft_version" to MINECRAFT_VERSION.substringBefore("-").split(".").take(2).joinToString(".")
         )
     }
 }
@@ -59,9 +58,6 @@ tasks.withType<Jar>().configureEach {
     from(project(":common").sourceSets.main.get().output)
     from(project(":vanilla").sourceSets.main.get().output)
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-
-tasks.remapJar {
     archiveVersion.set(MOD_VERSION)
     destinationDirectory.set(rootProject.layout.buildDirectory.dir("libs"))
 }

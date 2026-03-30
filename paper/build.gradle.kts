@@ -10,6 +10,7 @@ val MOD_VERSION: String by rootProject.extra
 repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
+    maven { url = uri(rootDir.resolve("mavenLocal")) }
 }
 
 base {
@@ -17,9 +18,9 @@ base {
 }
 
 dependencies {
-    paperweight.paperDevBundle("$MINECRAFT_VERSION-R0.1-SNAPSHOT")
+    paperweight.devBundle("org.purpurmc.purpur:dev-bundle:$MINECRAFT_VERSION-R0.1-SNAPSHOT")
 
-    compileOnly("io.papermc.paper:paper-api:$MINECRAFT_VERSION-R0.1-SNAPSHOT")
+    compileOnly("org.purpurmc.purpur:purpur-api:$MINECRAFT_VERSION-R0.1-SNAPSHOT")
     compileOnly(project(":common"))
     compileOnly(project(":vanilla"))
 }
@@ -46,16 +47,9 @@ tasks.withType<Jar>().configureEach {
         exclude("**/mixin/**")
         exclude("**/LevelBorderMod.*")
     }
+    archiveVersion.set(MOD_VERSION)
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-
-tasks.named<io.papermc.paperweight.tasks.RemapJar>("reobfJar") {
-    outputJar.set(rootProject.layout.buildDirectory.dir("libs").map { it.file("levelborder-paper-$MOD_VERSION.jar") })
-}
-
-tasks.named("build") {
-    dependsOn("reobfJar")
-}
+    destinationDirectory.set(rootProject.layout.buildDirectory.dir("libs"))}
 
 tasks.withType<JavaCompile>().configureEach {
     source(project(":common").sourceSets.main.get().allSource)

@@ -32,7 +32,7 @@ jobs:
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: 21
+          java-version: 25
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v5
@@ -57,7 +57,7 @@ jobs:
           version-resolver: latest
 
           game-versions: ${{ env.MINECRAFT_VERSION }}
-          java: 21
+          java: 25
 
           files: ${{ matrix.files }}
           loaders: ${{ matrix.loaders }}
@@ -78,7 +78,7 @@ jobs:
           version-resolver: latest
 
           game-versions: ${{ env.MINECRAFT_VERSION }}
-          java: 21
+          java: 25
 
           files: ${{ matrix.files }}
           loaders: ${{ matrix.loaders }}
