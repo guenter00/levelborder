@@ -14,7 +14,7 @@ The center of the border is the world spawn. To change it, use ```/setworldspawn
 ### Supported mod loaders
 
 - Fabric or Quilt
-- Forge
+- Neoforge
 - Paper
 
 ### Download

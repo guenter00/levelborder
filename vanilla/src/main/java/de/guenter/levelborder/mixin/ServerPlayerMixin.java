@@ -3,6 +3,7 @@ package de.guenter.levelborder.mixin;
 import de.guenter.levelborder.LevelBorderMod;
 import net.minecraft.server.level.ServerPlayer;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -10,29 +11,25 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ServerPlayer.class)
 public class ServerPlayerMixin {
 
-    @Inject(method = "giveExperiencePoints", at = @At("RETURN"))
-    private void onGivePoints(CallbackInfo ci) {
-        notifyExperienceChange();
-    }
+    @Unique
+    private int preActionLevel = -1;
 
-    @Inject(method = "setExperiencePoints", at = @At("RETURN"))
-    private void onSetPoints(CallbackInfo ci) {
-        notifyExperienceChange();
-    }
+    @Unique
+    private int preActionTotalExp = -1;
 
-    @Inject(method = "giveExperienceLevels", at = @At("RETURN"))
-    private void onAddLevel(CallbackInfo ci) {
-        notifyLevelChange();
-    }
+    @Inject(method = "tick", at = @At("TAIL"))
+    private void onTickTracker(CallbackInfo ci) {
+        ServerPlayer player = (ServerPlayer) (Object) this;
 
-    @Inject(method = "setExperienceLevels", at = @At("RETURN"))
-    private void onSetLevel(CallbackInfo ci) {
-        notifyLevelChange();
-    }
+        if (this.preActionTotalExp != player.totalExperience) {
+            this.preActionTotalExp = player.totalExperience;
+            notifyExperienceChange();
+        }
 
-    @Inject(method = "onEnchantmentPerformed", at = @At("RETURN"))
-    private void onApplyEnchantmentCost(CallbackInfo ci) {
-        notifyLevelChange();
+        if (this.preActionLevel != player.experienceLevel) {
+            this.preActionLevel = player.experienceLevel;
+            notifyLevelChange();
+        }
     }
 
     private void notifyExperienceChange() {

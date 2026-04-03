@@ -4,13 +4,19 @@ plugins {
     id("xyz.jpenilla.run-paper") version "3.0.2"
 }
 
-val MINECRAFT_VERSION: String by rootProject.extra
+val MINECRAFT_VERSION by extra { "26.1" }
 val MOD_VERSION: String by rootProject.extra
 
 repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
-    maven { url = uri(rootDir.resolve("mavenLocal")) }
+    maven("https://maven-prs.papermc.io/Paper/pr13736") {
+        name = "Maven for PR #13736" // https://github.com/PaperMC/Paper/pull/13736
+        mavenContent {
+            includeModule("io.papermc.paper", "dev-bundle")
+            includeModule("io.papermc.paper", "paper-api")
+        }
+    }
 }
 
 base {
@@ -18,9 +24,9 @@ base {
 }
 
 dependencies {
-    paperweight.devBundle("org.purpurmc.purpur:dev-bundle:$MINECRAFT_VERSION-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("$MINECRAFT_VERSION-R0.1-SNAPSHOT")
 
-    compileOnly("org.purpurmc.purpur:purpur-api:$MINECRAFT_VERSION-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:$MINECRAFT_VERSION-R0.1-SNAPSHOT")
     compileOnly(project(":common"))
     compileOnly(project(":vanilla"))
 }
@@ -49,7 +55,8 @@ tasks.withType<Jar>().configureEach {
     }
     archiveVersion.set(MOD_VERSION)
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    destinationDirectory.set(rootProject.layout.buildDirectory.dir("libs"))}
+    destinationDirectory.set(rootProject.layout.buildDirectory.dir("libs"))
+}
 
 tasks.withType<JavaCompile>().configureEach {
     source(project(":common").sourceSets.main.get().allSource)
