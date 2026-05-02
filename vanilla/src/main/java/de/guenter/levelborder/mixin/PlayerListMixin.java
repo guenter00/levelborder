@@ -26,8 +26,7 @@ public class PlayerListMixin {
         try {
             if (LevelBorderMod.levelBorderHandler == null) return;
 
-            boolean isNether = world.dimension() == Level.NETHER;
-            LevelBorderMod.levelBorderHandler.initBorder(player, isNether);
+            LevelBorderMod.levelBorderHandler.initBorder(player);
 
             if (world.dimension() == Level.OVERWORLD) {
                 if (!LevelBorderMod.levelBorderHandler.isWithinBorder(player)) {
@@ -56,7 +55,7 @@ public class PlayerListMixin {
             var respawnDim = config.respawnData().dimension();
             if (respawnDim == Level.OVERWORLD) return;
             
-            LevelBorderMod.levelBorderHandler.initBorder(player, respawnDim == Level.NETHER);
+            LevelBorderMod.levelBorderHandler.initBorder(player);
             
             var anchorPos = config.respawnData().pos();
             double oldX = player.getX();
@@ -85,8 +84,7 @@ public class PlayerListMixin {
         try {
             if (LevelBorderMod.levelBorderHandler == null) return;
 
-            final boolean inNether = newPlayer.level().dimension() == Level.NETHER;
-            LevelBorderMod.levelBorderHandler.initBorder(newPlayer, inNether);
+            LevelBorderMod.levelBorderHandler.initBorder(newPlayer);
 
             ServerPlayer.RespawnConfig savedConfig = clearedRespawnConfigs.remove(newPlayer.getUUID());
             if (savedConfig != null) {

@@ -14,17 +14,26 @@ public abstract class LevelBorderHandler<Player, WorldBorder, Server> {
         return Math.max(experience * 2.0D, 1.0D);
     }
 
-    final public void initBorder(Player player) {
-        initBorder(player, false);
+    private double getEffectiveSize(Player player) {
+        double size = calculateSize(player);
+        if (isDisableBorderShrink()) {
+            double maxSize = getMaxBorderSize(player);
+            if (size > maxSize) {
+                setMaxBorderSize(player, size);
+            } else {
+                size = maxSize;
+            }
+        }
+        return size;
     }
 
-    final public void initBorder(Player player, boolean nether) {
+    final public void initBorder(Player player) {
         if (getMode() == BorderMode.SHARED) {
             shareExperience();
         }
 
         final var border = createWorldBorder(player);
-        initBorder(player, border, calculateSize(player));
+        initBorder(player, border, getEffectiveSize(player));
         borders.put(getUUID(player), border);
 
         for (Player onlinePlayer : getPlayers()) {
@@ -35,8 +44,12 @@ public abstract class LevelBorderHandler<Player, WorldBorder, Server> {
     }
 
     final public void onChangeExperience() {
-        if (getMode() == BorderMode.SHARED) {
+        final var mode = getMode();
+        if (mode == BorderMode.SHARED) {
             shareExperience();
+        }
+        if (mode != BorderMode.OWN) {
+            updateForAll();
         }
     }
 
@@ -55,12 +68,8 @@ public abstract class LevelBorderHandler<Player, WorldBorder, Server> {
     final public void updateWorldBorder(Player player) {
         final var border = borders.get(getUUID(player));
         if (border != null) {
-            interpolateBorder(player, border, calculateSize(player), 2L * 1000L);
+            interpolateBorder(player, border, getEffectiveSize(player), 2L * 1000L);
         }
-    }
-
-    final protected void replaceBorderForPlayer(Player player, WorldBorder newBorder) {
-        borders.put(getUUID(player), newBorder);
     }
 
     final protected WorldBorder getBorderForPlayer(Player player) {
@@ -116,6 +125,18 @@ public abstract class LevelBorderHandler<Player, WorldBorder, Server> {
         }
         updateForAll();
     }
+
+    public void setDisableBorderShrink(boolean value) {
+        updateForAll();
+    }
+
+    final public boolean isDisableBorderShrinkPublic() {
+        return isDisableBorderShrink();
+    }
+
+    abstract protected boolean isDisableBorderShrink();
+    abstract protected double getMaxBorderSize(Player player);
+    abstract protected void setMaxBorderSize(Player player, double size);
 
     abstract protected BorderMode getMode();
 

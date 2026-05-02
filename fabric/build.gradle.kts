@@ -7,12 +7,12 @@ val FABRIC_LOADER_VERSION: String by rootProject.extra
 val FABRIC_API_VERSION: String by rootProject.extra
 val MOD_VERSION: String by rootProject.extra
 
-repositories {
-    mavenCentral()
-}
-
 base {
     archivesName.set("levelborder-fabric")
+}
+
+repositories {
+    mavenCentral()
 }
 
 dependencies {

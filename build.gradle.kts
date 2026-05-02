@@ -1,15 +1,15 @@
 plugins {
     id("java")
-    id("net.fabricmc.fabric-loom") version "1.15-SNAPSHOT" apply false
+    id("net.fabricmc.fabric-loom") version "1.16-SNAPSHOT" apply false
     id("net.neoforged.moddev") version "2.0.141" apply false
-    id("io.papermc.paperweight.userdev") version "2.0.0-SNAPSHOT" apply false
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.21" apply false
 }
 
-val MINECRAFT_VERSION by extra { "26.1.1" }
-val NEOFORGE_VERSION by extra { "26.1.1.1-beta" }
-val FABRIC_LOADER_VERSION by extra { "0.18.6" }
-val FABRIC_API_VERSION by extra { "0.145.3+26.1.1" }
-val MOD_VERSION by extra { "0.1.1-mc" + MINECRAFT_VERSION }
+val MINECRAFT_VERSION by extra { "26.1.2" }
+val NEOFORGE_VERSION by extra { "26.1.2.36-beta" }
+val FABRIC_LOADER_VERSION by extra { "0.19.2" }
+val FABRIC_API_VERSION by extra { "0.147.0+26.1.2" }
+val MOD_VERSION by extra { "0.2-mc" + MINECRAFT_VERSION }
 
 allprojects {
     apply(plugin = "java")

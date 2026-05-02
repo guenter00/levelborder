@@ -4,29 +4,21 @@ plugins {
     id("xyz.jpenilla.run-paper") version "3.0.2"
 }
 
-val MINECRAFT_VERSION by extra { "26.1" }
+val MINECRAFT_VERSION: String by rootProject.extra
 val MOD_VERSION: String by rootProject.extra
-
-repositories {
-    mavenCentral()
-    maven("https://repo.papermc.io/repository/maven-public/")
-    maven("https://maven-prs.papermc.io/Paper/pr13736") {
-        name = "Maven for PR #13736" // https://github.com/PaperMC/Paper/pull/13736
-        mavenContent {
-            includeModule("io.papermc.paper", "dev-bundle")
-            includeModule("io.papermc.paper", "paper-api")
-        }
-    }
-}
 
 base {
     archivesName.set("levelborder-paper")
 }
 
-dependencies {
-    paperweight.paperDevBundle("$MINECRAFT_VERSION-R0.1-SNAPSHOT")
+repositories {
+    mavenCentral()
+}
 
-    compileOnly("io.papermc.paper:paper-api:$MINECRAFT_VERSION-R0.1-SNAPSHOT")
+dependencies {
+    paperweight.paperDevBundle("$MINECRAFT_VERSION.build.+")
+
+    compileOnly("io.papermc.paper:paper-api:$MINECRAFT_VERSION.build.+")
     compileOnly(project(":common"))
     compileOnly(project(":vanilla"))
 }

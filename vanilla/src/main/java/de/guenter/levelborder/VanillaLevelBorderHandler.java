@@ -36,6 +36,41 @@ public abstract class VanillaLevelBorderHandler extends LevelBorderHandler<Serve
     }
 
     @Override
+    public void setDisableBorderShrink(boolean value) {
+        var data = getServer().overworld().getDataStorage().computeIfAbsent(BorderModeSavedData.TYPE);
+        data.disableBorderShrink = value;
+        if (value) {
+            data.maxBorderSizes.clear();
+        }
+        data.setDirty();
+        super.setDisableBorderShrink(value);
+    }
+
+    @Override
+    protected boolean isDisableBorderShrink() {
+        return getServer().overworld().getDataStorage().computeIfAbsent(BorderModeSavedData.TYPE).disableBorderShrink;
+    }
+
+    @Override
+    protected double getMaxBorderSize(ServerPlayer player) {
+        var data = getServer().overworld().getDataStorage().computeIfAbsent(BorderModeSavedData.TYPE);
+        Double size = data.maxBorderSizes.get(player.getUUID().toString());
+        if (size != null) {
+            return size;
+        }
+        return data.maxBorderSizes.values().stream()
+                .max(Double::compare)
+                .orElse(0.0);
+    }
+
+    @Override
+    protected void setMaxBorderSize(ServerPlayer player, double size) {
+        var data = getServer().overworld().getDataStorage().computeIfAbsent(BorderModeSavedData.TYPE);
+        data.maxBorderSizes.put(player.getUUID().toString(), size);
+        data.setDirty();
+    }
+
+    @Override
     protected WorldBorder createWorldBorder(ServerPlayer player) {
         return new WorldBorder();
     }
@@ -77,10 +112,7 @@ public abstract class VanillaLevelBorderHandler extends LevelBorderHandler<Serve
 
     private void sendLerpPacket(ServerPlayer player, double fromSize, double toSize, long durationTicks) {
         try {
-            
-            WorldBorder dummy = new WorldBorder();
-            dummy.setSize(fromSize);
-            ClientboundSetBorderLerpSizePacket packet = new ClientboundSetBorderLerpSizePacket(dummy);
+            ClientboundSetBorderLerpSizePacket packet = new ClientboundSetBorderLerpSizePacket(new WorldBorder());
 
             int doubleCount = 0;
             for (Field f : ClientboundSetBorderLerpSizePacket.class.getDeclaredFields()) {
@@ -259,13 +291,8 @@ public abstract class VanillaLevelBorderHandler extends LevelBorderHandler<Serve
     }
 
     private double getCurrentBorderSize() {
-        BorderMode mode = getMode();
-        if (mode == BorderMode.SUM) {
-            int sum = getPlayers().stream().map(this::getExperienceLevel).reduce(0, Integer::sum);
-            return Math.max(sum * 2.0D, 1.0D);
-        }
-        return getPlayers().stream()
-            .mapToDouble(p -> Math.max(getExperienceLevel(p) * 2.0D, 1.0D))
+        return previousBorderSizes.values().stream()
+            .mapToDouble(Double::doubleValue)
             .max()
             .orElse(1.0D);
     }
