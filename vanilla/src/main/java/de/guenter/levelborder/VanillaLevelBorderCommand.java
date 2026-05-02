@@ -1,6 +1,7 @@
 package de.guenter.levelborder;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
@@ -39,6 +40,29 @@ public class VanillaLevelBorderCommand {
                                     );
                                     return 1;
                                 })
+                        )
+                )
+                .then(Commands.literal("config")
+                        .then(Commands.literal("disable_border_shrink")
+                                .executes(context -> {
+                                    boolean current = levelBorderHandlerSupplier.get().isDisableBorderShrinkPublic();
+                                    context.getSource().sendSuccess(
+                                            () -> Component.literal("disable_border_shrink is currently: " + current),
+                                            false
+                                    );
+                                    return 1;
+                                })
+                                .then(Commands.argument("value", BoolArgumentType.bool())
+                                        .executes(context -> {
+                                            boolean value = BoolArgumentType.getBool(context, "value");
+                                            levelBorderHandlerSupplier.get().setDisableBorderShrink(value);
+                                            context.getSource().sendSuccess(
+                                                    () -> Component.literal("disable_border_shrink set to: " + value),
+                                                    true
+                                            );
+                                            return 1;
+                                        })
+                                )
                         )
                 );
         dispatcher.register(command);
