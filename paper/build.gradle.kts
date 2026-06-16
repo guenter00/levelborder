@@ -4,7 +4,7 @@ plugins {
     id("xyz.jpenilla.run-paper") version "3.0.2"
 }
 
-val MINECRAFT_VERSION: String by rootProject.extra
+val MINECRAFT_VERSION by extra { "26.1.2" }
 val MOD_VERSION: String by rootProject.extra
 
 base {
