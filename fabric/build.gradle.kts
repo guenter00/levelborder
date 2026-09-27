@@ -2,10 +2,10 @@ plugins {
     id("net.fabricmc.fabric-loom")
 }
 
-val MINECRAFT_VERSION: String by rootProject.extra
-val FABRIC_LOADER_VERSION: String by rootProject.extra
-val FABRIC_API_VERSION: String by rootProject.extra
-val MOD_VERSION: String by rootProject.extra
+val MINECRAFT_VERSION = rootProject.extra["MINECRAFT_VERSION"] as String
+val FABRIC_LOADER_VERSION = rootProject.extra["FABRIC_LOADER_VERSION"] as String
+val FABRIC_API_VERSION = rootProject.extra["FABRIC_API_VERSION"] as String
+val MOD_VERSION = rootProject.extra["MOD_VERSION"] as String
 
 base {
     archivesName.set("levelborder-fabric")
@@ -16,8 +16,8 @@ repositories {
 }
 
 dependencies {
-    implementation("net.fabricmc:fabric-loader:${FABRIC_LOADER_VERSION}")
-    implementation("net.fabricmc.fabric-api:fabric-api:${FABRIC_API_VERSION}")
+    implementation("net.fabricmc:fabric-loader:$FABRIC_LOADER_VERSION")
+    implementation("net.fabricmc.fabric-api:fabric-api:$FABRIC_API_VERSION")
 
     minecraft("com.mojang:minecraft:$MINECRAFT_VERSION")
 
@@ -29,15 +29,15 @@ loom {
     runs {
         named("client") {
             client()
-            configName = "Fabric Client"
-            ideConfigGenerated(true)
-            runDir("run")
+            displayName.set("Fabric Client")
+            generateRunConfig.set(true)
+            runDirectory.set(file("run"))
         }
         named("server") {
             server()
-            configName = "Fabric Server"
-            ideConfigGenerated(true)
-            runDir("run")
+            displayName.set("Fabric Server")
+            generateRunConfig.set(true)
+            runDirectory.set(file("run"))
         }
     }
 }

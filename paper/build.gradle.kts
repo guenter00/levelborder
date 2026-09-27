@@ -4,8 +4,8 @@ plugins {
     id("xyz.jpenilla.run-paper") version "3.0.2"
 }
 
-val MINECRAFT_VERSION by extra { "26.1.2" }
-val MOD_VERSION: String by rootProject.extra
+val MINECRAFT_VERSION = rootProject.extra["MINECRAFT_VERSION"] as String
+val MOD_VERSION = rootProject.extra["MOD_VERSION"] as String
 
 base {
     archivesName.set("levelborder-paper")

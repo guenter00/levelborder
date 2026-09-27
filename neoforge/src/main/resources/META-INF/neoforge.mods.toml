@@ -9,7 +9,7 @@ version = "${version}"
 
 displayName = "Level = Border"
 
-logoFile = "icon.png"
+iconFile = "icon.png"
 
 authors = "guenter00, jakobkmar"
 

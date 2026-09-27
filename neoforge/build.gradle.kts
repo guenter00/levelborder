@@ -3,9 +3,9 @@ plugins {
 }
 
 val notNeoTask: (Task) -> Boolean = { !it.name.startsWith("neo") && !it.name.startsWith("compileService") }
-val NEOFORGE_VERSION: String by rootProject.extra
-val MINECRAFT_VERSION: String by rootProject.extra
-val MOD_VERSION: String by rootProject.extra
+val NEOFORGE_VERSION = rootProject.extra["NEOFORGE_VERSION"] as String
+val MINECRAFT_VERSION = rootProject.extra["MINECRAFT_VERSION"] as String
+val MOD_VERSION = rootProject.extra["MOD_VERSION"] as String
 
 base {
     archivesName = "levelborder-neoforge"
